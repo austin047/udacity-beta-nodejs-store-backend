@@ -37,7 +37,7 @@ pool.on("connect", () => {
     console.log(`${process.env.NODE_ENV} environment: db connection established`);
 });
 
-pool.on("error", (error, client) => {
+pool.on("error", (error, _) => {
     console.log(`${process.env.NODE_ENV} environment: error occured while establishing connection to database`);
     console.log(error)
 });

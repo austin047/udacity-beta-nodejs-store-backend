@@ -9,8 +9,8 @@ import { IUser } from '../src/helpers/interfaceDef'
 describe('## User Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
     axios.interceptors.response.use((config) => {
-        /** In dev, intercepts request and logs it into console for dev */
-        return config;
+    /** In test, intercepts response prevent default throw exception on promis rejection from API*/
+       return config;
     }, (error) => {
         if(error.isAxiosError) return Promise.resolve(error.response)
         else return Promise.reject(error);

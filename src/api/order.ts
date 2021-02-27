@@ -18,7 +18,6 @@ orderRouter.route('/:orderId')
 
 orderRouter.route('/users/:userId')
     /** GET /api/users - Get user*/
-    // .get(orderModel.list)
     .post(validateToken, validateRequestParams(ParamValidation.createOrder), orderModel.create)
 
     /** GET /api/users/:userId */

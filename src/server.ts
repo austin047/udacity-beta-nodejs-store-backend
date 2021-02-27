@@ -13,7 +13,9 @@ import { configureEnv } from './helpers/utils'
 
 //Intialize environmental variables
 config()
-configureEnv()
+
+//If in development or test environment and .env file is not found copy .env.example to .env file
+// configureEnv()
 
 
 const app: express.Application = express()

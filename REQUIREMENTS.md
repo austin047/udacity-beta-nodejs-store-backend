@@ -16,13 +16,13 @@ Example: You can format this however you like but these types of information sho
 - Index 
   route: '/products' [GET]
 
-- Show (args: product id)
+- Show (args: product id) [token required]
   route: '/products/productId' [GET]
 
 - Create (args: Product)[token required]
   route: '/products' [POST]
 
-- Products by category (args: product category)
+- Products by category (args: product category) [token required]
   route: '/products/:productId/?category' [GET]
 
 #### Users
@@ -30,7 +30,7 @@ Example: You can format this however you like but these types of information sho
   route: '/users'
 
 - Show (args: id)[token required]
-  route: '/users/:userId' [GET]
+  route: '/users/:userId' [GET] 
 
 - Create (args: User)[token required]
   route: '/users' [POST]
@@ -47,14 +47,14 @@ Example: You can format this however you like but these types of information sho
 -  id
 - name
 - price
-- [OPTIONAL] category
+- [OPTIONAL] category_id
 
-Product (product_id: int PRIMARY KEY, name: varchar, category: varchar)
+Product (id: int PRIMARY KEY, name: varchar, category: int [FOREIGN KEY to category table])
 
-Category (product_id: int PRIMARY KEY, name: varchar)
-
-
-Table
+#### Category
+- id
+- name
+Category (id: int PRIMARY KEY, name: varchar)
 
 
 #### User
@@ -63,16 +63,14 @@ Table
 - lastName
 - password
 
-Users (user_id: int PRIMARY KEY, first_name: varchar not null, last_name: varchar, password: varchar )
+Users (id: int PRIMARY KEY, firstname: varchar, lastname: varchar, password: varchar )
 
 #### Orders
-- id
-- id of each product in the order
-- quantity of each product in the order
+- id - id of each product in the order
 - user_id
 - status of order [complete, pending]
 
-Order (order_id: int PRIMARY KEY, user_id: int [foreign key to users table], status: varchar)
+Order (order_id: int PRIMARY KEY, user_id: int [foreign key to users table], status: varchar[complete or pending])
 
 
 [AddtionalTable] 

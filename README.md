@@ -23,6 +23,8 @@ Your application must make use of the following libraries:
 - Clone repo `git clone https://github.com/austin047/udacity-beta-nodejs-store-backend.git`
 - `cd udacity-beta-nodejs-store-backend`
 
+- Copy the `.env.example` file and rename to `.env`: NB, this file is needed for both docker and your server
+
 - Run `docker-compose up` - builds the images if the images do not exist and starts the containers
 
 - Run `yarn` - to install all project dependencies

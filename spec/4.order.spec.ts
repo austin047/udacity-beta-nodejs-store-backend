@@ -11,7 +11,7 @@ import { correctCategory } from "./mock/category";
 describe('## orders Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
     axios.interceptors.response.use((config) => {
-        /** In dev, intercepts request and logs it into console for dev */
+        /** In test, intercepts response prevent default throw exception on promis rejection from API*/
         return config;
     }, (error) => {
         if(error.isAxiosError) return Promise.resolve(error.response)
@@ -152,7 +152,6 @@ describe('## orders Apis',  () => {
                 const orderResponse = await axios.get(`/orders/users/${user.id}?status=complete`);
                 
                 expect(orderResponse.status).toBe(StatusCodes.OK)
-                // expect(orderResponse.data.length).toBeGreaterThan(0)
                 expect(orderResponse.data).toEqual(jasmine.any(Array))
 
                 done()

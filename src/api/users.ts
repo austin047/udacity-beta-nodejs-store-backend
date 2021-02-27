@@ -17,9 +17,6 @@ userRouter.route('/:userId')
     /** GET /api/users/userId - Get user*/
     .get(validateToken, userModel.get)
 
-    /** PUT /api/users/:userId - Update user */
-    // .put(userModel.update)
-
 
    
 

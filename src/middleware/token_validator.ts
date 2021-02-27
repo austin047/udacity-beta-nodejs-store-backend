@@ -7,8 +7,20 @@ import {
 
 const secret: Secret = process.env.SECRET_KEY as string;
 
+/**
+ * 
+ * @param payload - User object to decode for token
+ * @description - use user object to decode user and return token
+ */
 export const createAuthToken = ((payload: Object): string => jwt.sign(payload, secret, { expiresIn: '7d' }));
 
+/**
+ * 
+ * @param req - RequestBody
+ * @param res - ResponseBody
+ * @param next - NextMiddlwareFunction@param
+ * @description - Verify if user token is valid
+ */
 export const validateToken = (req: Request, res: Response, next: NextFunction): NextFunction | Response |  void => {
     const token = req.headers.authorization
   

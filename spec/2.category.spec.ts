@@ -10,7 +10,7 @@ import { correctCategory } from "./mock/category";
 describe('## Categories Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
     axios.interceptors.response.use((config) => {
-        /** In dev, intercepts request and logs it into console for dev */
+        /** In test, intercepts response prevent default throw exception on promis rejection from API*/
         return config;
     }, (error) => {
         if(error.isAxiosError) return Promise.resolve(error.response)
@@ -24,15 +24,10 @@ describe('## Categories Apis',  () => {
         server
     })
 
-    // afterAll(() => {
-    //     server.close()
-    // })
-
     describe("# POST /api/categories", () => {
         beforeAll(async (done) => {
             try {
                 const userResponse = await axios.post("/users", correctUser);
-                //   expect(userResponse.status).toBe(StatusCodes.CREATED)
                   expect(userResponse.data.user.firstName).toBe(correctUser.firstName)
                   user = userResponse.data.user
 
