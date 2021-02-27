@@ -25,7 +25,8 @@ Your application must make use of the following libraries:
 
 - Copy the `.env.example` file and rename to `.env`: NB, this file is needed for both docker and your server
 
-- Run `docker-compose up` - builds the image if the images do not exist and starts the containers. Posgress Database run in the container on port 5432
+- Run `docker-compose up` - builds the image if the images do not exist and starts the containers. Posgress Database run in the container on port 5432 
+[optional] Run `docker-compose up -d` to run docker container in the backgroud
 
 - Run `yarn` - to install all project dependencies
 
@@ -35,9 +36,6 @@ Your application must make use of the following libraries:
 
 ### Tests steps
 - Run `yarn test` - Runs all tests, runs test on port '5000'
-
-### Additional
-
 
 
 ## udacity-beta-nodejs-store-backend
