@@ -11,7 +11,7 @@ categoryRouter.route('/')
     /** GET /api/users - Get user*/
     .get(categoryModel.list)
     /** POST /api/users - Create new user */
-    .post(validateRequestParams(ParamValidation.createCategory), categoryModel.create)
+    .post(validateToken, validateRequestParams(ParamValidation.createCategory), categoryModel.create)
 
     categoryRouter.route('/:categoryId')
     /** GET /api/users/userId - Get user*/

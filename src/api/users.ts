@@ -9,7 +9,7 @@ const userRouter = express.Router();
 
 userRouter.route('/')
     /** GET /api/users - Get user*/
-    .get(userModel.list)
+    .get(validateToken, userModel.list)
     /** POST /api/users - Create new user */
     .post(validateRequestParams(ParamValidation.createUser), userModel.create)
 

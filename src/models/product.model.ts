@@ -84,42 +84,6 @@ class ProductModel {
     }
 
 
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Get product for a category
-     * @return {json} Returns json  [product] object 
-     */
-    static async getProductsForBy(req: Request, res: Response, next: NextFunction) {
-        var client = await pool.connect()
-        try {
-
-            const { categoryId } = req.query;
-
-            const { rows } = await client.query(productQueries.getProductByCategory, [categoryId])  
-
-            if(rows.length <= 0 ) return res.status(StatusCodes.NOT_FOUND).json({})
-
-            const productList = rows.map((row) => {
-                return {
-                    id : row.id,
-                    name: row.name,
-                    price: row.price,
-                    categoryId: row.category_id
-
-                } 
-            })
-
-           res.status(StatusCodes.OK).json(productList)
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
-    }
 
     /**
      * @static

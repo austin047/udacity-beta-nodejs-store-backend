@@ -16,20 +16,17 @@ Example: You can format this however you like but these types of information sho
 - Index 
   route: '/products' [GET]
 
-- Show (args: product id) [token required]
+- Show (args: productId) [token required]
   route: '/products/productId' [GET]
 
 - Create (args: Product)[token required]
   route: '/products' [POST]
 
-- Products by category (args: product category) [token required]
-  route: '/products/:productId/?category' [GET]
-
 #### Users
 - Index [token required]
-  route: '/users'
+  route: '/users' [GET]
 
-- Show (args: id)[token required]
+- Show (args: userId)[token required]
   route: '/users/:userId' [GET] 
 
 - Create (args: User)[token required]
@@ -41,6 +38,16 @@ Example: You can format this however you like but these types of information sho
 
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
   route: '/orders/users/userId/?status=complete' [GET]
+
+#### Categories
+- Index [token required]
+  route: '/categories' [GET]
+
+- Show (args: categoryId)[token required]
+  route: '/categories/:categoryId' [GET] 
+
+- Current Category (args: Category)[token required]
+  route: '/category' [POST]
 
 ## Data Shapes
 #### Product
@@ -68,7 +75,7 @@ Users (id: int PRIMARY KEY, firstname: varchar, lastname: varchar, password: var
 #### Orders
 - id - id of each product in the order
 - user_id
-- status of order [complete, pending]
+- status of order [active, complete]
 
 Order (order_id: int PRIMARY KEY, user_id: int [foreign key to users table], status: varchar[complete or pending])
 

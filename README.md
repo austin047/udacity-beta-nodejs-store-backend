@@ -17,7 +17,7 @@ Your application must make use of the following libraries:
 ## Installation and setup
 ### Installation  Requirments
  - Git 
- - Docker and Docker compose installations
+ - Docker and Docker compose installations 
 
  ### Setup steps
 - Clone repo `git clone https://github.com/austin047/udacity-beta-nodejs-store-backend.git`
@@ -25,7 +25,7 @@ Your application must make use of the following libraries:
 
 - Copy the `.env.example` file and rename to `.env`: NB, this file is needed for both docker and your server
 
-- Run `docker-compose up` - builds the images if the images do not exist and starts the containers
+- Run `docker-compose up` - builds the image if the images do not exist and starts the containers. Posgress Database run in the container on port 5432
 
 - Run `yarn` - to install all project dependencies
 

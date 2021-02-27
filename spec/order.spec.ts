@@ -165,7 +165,7 @@ describe('## orders Apis',  () => {
             it('should return a status code of 400[BAD_REQUEST] when retrieving order with wrong status',  async (done) => {
                 try {
 
-                const wrongStatus = "omplete" //Options 'complete' 'pending'
+                const wrongStatus = "omplete" //Options 'complete' 'active'
 
                 const orderResponse = await axios.get(`/orders/users/${user.id}?status=${wrongStatus}`);
 

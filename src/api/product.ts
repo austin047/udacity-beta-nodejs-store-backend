@@ -13,8 +13,10 @@ productRouter.route('/')
     /** POST /api/users - Create new user */
     .post(validateToken, validateRequestParams(ParamValidation.createProduct), productModel.create)
 
-    productRouter.route('/:productId')
+productRouter.route('/:productId')
     /** GET /api/users/userId - Get user*/
     .get(validateToken, productModel.get)
+
+
 
 export default productRouter; 
