@@ -1,0 +1,36 @@
+{
+    "dev": {
+        "driver": "pg",
+        "user": {"ENV": "DEVELOPMENT_POSTGRES_USERNAME"},
+        "password": {"ENV": "DEVELOPMENT_POSTGRES_PASSWORD"},
+        "database": {"ENV": "DEVELOPMENT_POSTGRES_DB"},
+        "host": "localhost",
+        "port": "5432",
+        "multipleStatements": true,
+        "schema": "my_schema"
+      },
+    
+      "test": {
+        "driver": "pg",
+        "user": {"ENV": "TEST_POSTGRES_USERNAME"},
+        "password": {"ENV": "TEST_POSTGRES_PASSWORD"},
+        "database": {"ENV": "TEST_POSTGRES_DB"},
+        "port": "5432",
+        "schema": "my_schema"
+      },
+    
+      "prod": {
+        "driver": "pg",
+        "user": {"ENV": "PRODUCTION_POSTGRES_USERNAME"},
+        "password": {"ENV": "PRODUCTION_POSTGRES_PASSWORD"},
+        "database": {"ENV": "PRODUCTION_POSTGRES_DB"},
+        "host": "localhost",
+        "port": "5432",
+        "schema": "my_schema"
+      },
+
+      "sql-file": true,
+
+      "other": "postgres://uname:pw@server.com/dbname"
+
+}
