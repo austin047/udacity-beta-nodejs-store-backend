@@ -15,7 +15,7 @@ productRouter.route('/')
 
 productRouter.route('/:productId')
     /** GET /api/users/userId - Get user*/
-    .get(validateToken, productModel.get)
+    .get(validateToken, validateRequestParams(ParamValidation.retieveProduct), productModel.get)
 
 
 

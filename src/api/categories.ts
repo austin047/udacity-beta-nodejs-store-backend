@@ -15,6 +15,6 @@ categoryRouter.route('/')
 
     categoryRouter.route('/:categoryId')
     /** GET /api/users/userId - Get user*/
-    .get(validateToken, categoryModel.get)
+    .get(validateToken, validateRequestParams(ParamValidation.retieveCategory), categoryModel.get)
 
 export default categoryRouter; 

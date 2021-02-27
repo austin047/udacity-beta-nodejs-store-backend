@@ -107,10 +107,8 @@ class OrderModel {
             const orderList = rows.map((row) => {
                 return {
                     id : row.id,
-                    name: row.name,
-                    price: row.price,
-                    categoryId: row.category_id
-
+                    userId: row.user_id,
+                    status: row.status
                 } 
             })
 

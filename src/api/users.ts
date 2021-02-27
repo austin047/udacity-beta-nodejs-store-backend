@@ -15,7 +15,7 @@ userRouter.route('/')
 
 userRouter.route('/:userId')
     /** GET /api/users/userId - Get user*/
-    .get(validateToken, userModel.get)
+    .get(validateToken,validateRequestParams(ParamValidation.retieveUser), userModel.get)
 
 
    
