@@ -1,130 +1,117 @@
 import pool from "../database/databaseConnection";
-import bcrypt from "bcryptjs";
 import { userQueries } from "../database/queries/users.queries";
-import { Request, Response, NextFunction } from 'express';
-import { createAuthToken } from "../middleware/token_validator";
-import {
-    StatusCodes,
-} from 'http-status-codes';
+import bcrypt from "bcryptjs";
+import APIError from "../helpers/APIError";
+import { StatusCodes } from "http-status-codes";
 
+export type User = {
+    id: number,
+    userName: string,
+    firstName: string,
+    lastName: string,
+    password?: string
+};
 
-
-
-class UserModel { 
-
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Create a user and return the new user object
-     * @return {json} Returns json New [User] object 
-     */
-    static async create(req: Request, res: Response, next: NextFunction) {
+export class UserStore {
+    async index(): Promise<User[]> {
         var client = await pool.connect()
-        try {
-            
-            const user = [
-                req.body.firstName,
-                req.body.lastName,
-                bcrypt.hashSync(req.body.password, Number(process.env.SALT)),
-            ];
+        
+        const { rows } = await client.query(userQueries.getAllUser)
 
-            const { rows } = await client.query(userQueries.createUser, user)
+        const userList = rows.map((row) => {
+            return {
+                id : row.id,
+                userName: row.username,
+                firstName: row.firstname,
+                lastName: row.lastname
+            } 
+        })
 
-            if(rows.length <= 0 ) 
-                return next(new Error("InternalError: User Account Not Created After ALl conditions passed"))
-                // this will be passed to the erro middle were which intentds logs this errot processing
+        client.release()
 
-            const userResult  =  {
+
+        return userList
+    }
+
+
+    async show(userId: Number): Promise<User | null> {
+        var client = await pool.connect()
+
+        const { rows } = await client.query(userQueries.getUser, [userId])  
+
+        if( rows.length <= 0) return null
+
+        client.release()
+
+        return   {
+            id: rows[0].id,
+            userName: rows[0].username,
+            firstName: rows[0].firstname,
+            lastName: rows[0].lastname,
+        } 
+    }
+
+    async create(user: User): Promise<User> {
+        var client = await pool.connect()
+
+        const pepper = process.env.SALT_PASSWORD 
+
+        if(!pepper) throw new Error("Pepper not found")
+
+        const userPayload = [
+            user.userName,
+            user.firstName,
+            user.lastName,
+            bcrypt.hashSync(user.password + pepper, Number(process.env.SALT)),
+        ]
+
+        const { rows } = await client.query(userQueries.createUser, userPayload)
+
+        if(rows.length <= 0 ) throw new  Error("InternalError: User Account Not Created After ALl conditions passed")
+
+        client.release()
+
+        return  {
+            id: rows[0].id,
+            userName: rows[0].username,
+            firstName: rows[0].firstname,
+            lastName: rows[0].lastname,
+        } 
+
+    }
+
+    async authenticate(userName: string, password: string): Promise<User | null> {
+        var client = await pool.connect()
+
+        const { rows } = await client.query(userQueries.getUserByUserName, [userName])
+
+        if(rows.length <= 0 ) return null
+
+        const user = rows[0]
+
+        const pepper = process.env.SALT_PASSWORD 
+
+        if(!pepper) throw new Error("Pepper not found")
+
+        client.release()
+
+        if(bcrypt.compareSync(password+pepper, user.password)) {
+            return  {
                 id: rows[0].id,
+                userName: rows[0].username,
                 firstName: rows[0].firstname,
                 lastName: rows[0].lastname,
             } 
-
-            const token = createAuthToken(userResult);
-
-            res.status(StatusCodes.CREATED).send({
-                user: userResult,
-                token: token
-            })
-
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
+        } else throw new APIError("User is not Authorized", StatusCodes.UNAUTHORIZED, true)
     }
 
-     /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Get user by userId
-     * @return {json} Returns json  [Order] object 
-     */
-    static async get(req: Request, res: Response, next: NextFunction)  {
+    async delete(userId: Number): Promise<null> {
         var client = await pool.connect()
-        try {
 
-            const { userId } = req.params;
+        await client.query(userQueries.deleteUser, [userId])
 
-            const { rows } = await client.query(userQueries.getUser, [userId])  
+        client.release()
 
-            if(rows.length <= 0 ) return res.status(StatusCodes.NOT_FOUND).json({})
-
-
-            const user  =   {
-                id: rows[0].id,
-                firstName: rows[0].firstname,
-                lastName: rows[0].lastname,
-            } 
-
-
-           res.status(StatusCodes.OK).json(user)
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
+        return null;
     }
-
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Get list of all users
-     * @return {json} Returns json [List<Order>] object 
-     */
-    static async list(req: Request, res: Response, next: NextFunction) {
-        var client = await pool.connect()
-        try {
-
-            const { rows } = await client.query(userQueries.getAllUser)
-
-            const orderList = rows.map((row) => {
-                return {
-                    id : row.id,
-                    userId: row.user_id,
-                    status: row.status
-                } 
-            })
-
-            res.status(StatusCodes.OK).json(orderList)
-
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
-    }
-
-
 }
-
-export default UserModel

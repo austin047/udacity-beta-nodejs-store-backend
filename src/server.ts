@@ -7,6 +7,7 @@ import {
   StatusCodes,
   ReasonPhrases
 } from 'http-status-codes';
+import APIError from './helpers/APIError'
 
 
 
@@ -50,15 +51,38 @@ app.use('/api', apiRouter)
 //     return next(err);
 //   });
 
+// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+
+//   console.log("Error")
+//   console.log(typeof err)
+
+//     if (err instanceof APIError) {
+//        console.log(typeof err)
+//         return res.status(err.status).json({
+//           error: err
+//         })
+//     } else {
+//       return next(err);
+//     }
+
+//   });
+
+
+
   
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {// eslint-disable-line no-unused-vars
     // console.log(err.stack)
+
+    let status: number
+
     console.log(err)
-    console.log(process.env.NODE_ENV)
+
+    if(err.status) status = err.status
+    else status = StatusCodes.INTERNAL_SERVER_ERROR
 
     // next(err) err.isPublic ? err.message : httpStatus[err.status],
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: err.isPublic ? err.message : ReasonPhrases.INTERNAL_SERVER_ERROR,
+    res.status(status).json({
+      error: err.isPublic ? err.message : ReasonPhrases.INTERNAL_SERVER_ERROR,
       stack: (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'dev') ? err.stack  : {}
     })
     

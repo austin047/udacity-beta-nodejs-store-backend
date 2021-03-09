@@ -12,6 +12,20 @@ Example: You can format this however you like but these types of information sho
 
 
 ## API Endpoints
+
+#### Categories
+- Index [token required]
+  route: '/categories' [GET]
+
+- Show (args: categoryId)[token required]
+  route: '/categories/:categoryId' [GET] 
+
+- Current Category (args: Category)[token required]
+  route: '/category' [POST]
+
+- Delete (args: categoryId)[token required]
+  route: '/categories/:categoryId' [DELETE] 
+
 #### Products
 - Index 
   route: '/products' [GET]
@@ -21,6 +35,10 @@ Example: You can format this however you like but these types of information sho
 
 - Create (args: Product)[token required]
   route: '/products' [POST]
+
+
+- Delete (args: productId) [token required]
+  route: '/products/productId' [DELETE]
 
 #### Users
 - Index [token required]
@@ -32,22 +50,40 @@ Example: You can format this however you like but these types of information sho
 - Create (args: User)[token required]
   route: '/users' [POST]
 
+- Delete (args: userId)[token required]
+  route: '/users/:userId' [DELETE] 
+
+
 #### Orders
-- Current Order by user (args: user id)[token required]
+- Index [token required]
+  route: '/orders' [GET]
+
+- Update Order (args: orderId)[token required]
+  route: '/orders/:orderId' [PUT]
+
+- GET Order (args: orderId)[token required]
+  route: '/orders/:orderId' [GET]
+
+- Delete Order (args: orderId)[token required]
+  route: '/orders/:orderId' [DELETE]
+
+- Order by user (args: user id)[token required]
   route: '/orders/users/userId' [POST]
 
+- Get order for user (args: user id)[token required]
+  route: '/orders/users/userId' [GET]
+
+- Add product to order (args: user id)[token required]
+  route: '/orders/:orderId/product' [POST]
+
+- [OPTIONAL]GET product to order (args: user id)[token required]
+  route: '/orders/:orderId/product' [GET]
+
+
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
-  route: '/orders/users/userId/?status=complete' [GET]
+  route: '/orders/users/:userId/?status=complete' [GET]
 
-#### Categories
-- Index [token required]
-  route: '/categories' [GET]
 
-- Show (args: categoryId)[token required]
-  route: '/categories/:categoryId' [GET] 
-
-- Current Category (args: Category)[token required]
-  route: '/category' [POST]
 
 ## Data Shapes
 #### Product

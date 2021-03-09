@@ -1,4 +1,5 @@
 export const correctUser = {
+    userName: "noelfon",
     firstName: "Fon",
     lastName: "Noel",
     password: "password123"

@@ -40,7 +40,7 @@ exports.up = function(db) {
     status: {
       type: 'string',
       notNull: true
-    }, // where 1 is active and 2 is complete
+    },
   });
 };
 

@@ -24,6 +24,11 @@ exports.up = function(db) {
       unique: true,
       notNull: true,
     },
+    username: {
+      type: "string",
+      unique: true,
+      notNull: true
+    },
     firstname: {
       type: "string",
       notNull: true

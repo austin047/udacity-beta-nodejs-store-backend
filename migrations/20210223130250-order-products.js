@@ -16,22 +16,14 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db) {
   return db.createTable("order_products", {
-    user_id: {
-      type: "int", 
+    id: {
+      type: "int",
+      primaryKey: true,
+      autoIncrement: true,
+      unique: true,
       notNull: true,
-      foreignKey: {
-        name: 'order_products_user_id_pk',
-        table: 'users',
-        rules: {
-          onDelete: 'CASCADE',
-          onUpdate: 'CASCADE'
-        },
-        mapping: {
-          user_id: "id"
-        }
-      }
     },
-
+    
     order_id: {
       type: "int", 
       notNull: true,

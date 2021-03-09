@@ -1,10 +1,11 @@
 import axios from "axios";
-import server from "../src/server";
-import { correctUser, noFirstNameUser } from "./mock/user";
+import server from "../../src/server";
+import { correctUser, noFirstNameUser } from "../mock/user";
 import {
     StatusCodes,
 } from 'http-status-codes';
-import { IUser } from '../src/helpers/interfaceDef'
+import { IUser } from '../../src/helpers/interfaceDef'
+import { User } from "../../src/models/user.model";
 
 describe('## User Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
@@ -20,15 +21,20 @@ describe('## User Apis',  () => {
         server
     })
 
+  
 
 
     describe("# POST /api/users", () => {
         it('should creat a new user', async (done) =>  {
             try {
-                const response = await axios.post("/users", correctUser);
+                const response = await axios.post("/users", { userName: "newmistro", firstName: "Main Mistro", lastName: "Maistro Man", password: "password123"});
+
+                // axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
 
                 expect(response.status).toBe(StatusCodes.CREATED)
                 expect(response.data).toEqual(jasmine.any(Object));
+
+                // user = response.data
             } catch(err) {
                 done.fail(err)
             } finally {
@@ -46,6 +52,8 @@ describe('## User Apis',  () => {
                 done()
             }
         });
+
+        
     })
 
     describe("# GET /api/users", () => {
@@ -63,13 +71,17 @@ describe('## User Apis',  () => {
     })
 
     describe("# GET /api/users/:userId", () => {
-        let user:  IUser
+        // let user:  IUser
+        let user: User
+
         beforeAll(async (done) => {
             try {
-              const response = await axios.post("/users", correctUser);
-              user = response.data.user 
+                const response = await axios.post("/users", { userName: "newmistro2", firstName: "Main Mistro", lastName: "Maistro Man", password: "password123"});
 
-              axios.defaults.headers.common["Authorization"] = response.data.token;
+                // console.log(response)
+                user = response.data.user
+
+              axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
             } catch (err) {
                 done.fail(err)
             }
@@ -81,7 +93,9 @@ describe('## User Apis',  () => {
 
         it('should get user details', async (done) =>  {
             try {
+
                 const response = await axios.get(`/users/${user.id}`);
+
                 expect(response.status).toBe(StatusCodes.OK)
 
                 const responseData = response.data as IUser;  
@@ -98,7 +112,7 @@ describe('## User Apis',  () => {
         });
 
 
-        it('should return notfound when user is is not present in system', async (done) =>  {
+        it('should return notfound when user is not present in system', async (done) =>  {
             try {
                 const response = await axios.get(`/users/0`);
                 expect(response.status).toBe(StatusCodes.NOT_FOUND)
@@ -136,7 +150,7 @@ describe('## User Apis',  () => {
             try {
                 let wrongHeaderConfig = {
                     headers: {
-                        Authorization: "wrongauthtoken",
+                        Authorization: "Bearer wrongauthtoken",
                     }
                   }
 
@@ -149,6 +163,16 @@ describe('## User Apis',  () => {
             }
              
             
+        });
+
+        it('should delete a user', async (done) =>  {
+            try {
+                const response = await axios.delete(`/users/${user.id}`);
+                expect(response.status).toBe(StatusCodes.OK)
+                done()
+            } catch(err) {
+                done.fail(err)
+            }  
         });
 
       })

@@ -1,13 +1,13 @@
 import axios from "axios";
-import server from "../src/server";
-import { correctUser } from "./mock/user";
+import server from "../../src/server";
+import { correctUser } from "../mock/user";
 import {
     StatusCodes,
 } from 'http-status-codes';
-import { IUser, IProduct, ICategory } from '../src/helpers/interfaceDef'
+import { IUser, IProduct, ICategory } from '../../src/helpers/interfaceDef';
 
-import { correctProduct } from "./mock/product";
-import { correctCategory } from "./mock/category";
+import { correctCategory } from "../mock/category";
+import { Category } from "../../src/models/category.model";
 
 describe('## products Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
@@ -19,16 +19,19 @@ describe('## products Apis',  () => {
         else return Promise.reject(error);
     });
 
-    let category: ICategory
+    let category: Category
 
     beforeAll(async (done) => {
         server;
-        const userResponse = await axios.post("/users", correctUser);
-        axios.defaults.headers.common["Authorization"] = userResponse.data.token;
+
+        const userResponse = await axios.post("/users", { userName: "mistro", firstName: "Main Mistro", lastName: "Maistro Man", password: "password123"});
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${userResponse.data.token}`;
         
         const response = await axios.post("/categories", correctCategory);
         expect(response.status).toBe(StatusCodes.CREATED)
         category = response.data
+        
         done()
     })
 
@@ -43,7 +46,8 @@ describe('## products Apis',  () => {
                     name: "Biscuit",
                     price: 20,
                     categoryId: category.id
-                };                                
+                }; 
+
                 const response = await axios.post("/products", newCorrectProduct);
 
                 expect(response.status).toBe(StatusCodes.CREATED)
@@ -140,7 +144,7 @@ describe('## products Apis',  () => {
             try {
                 let wrongHeaderConfig = {
                     headers: {
-                        Authorization: "wrongauthtoken",
+                        Authorization: "Bearer wrongauthtoken",
                     }
                   }
                   
@@ -155,6 +159,16 @@ describe('## products Apis',  () => {
                done() 
             }
             
+        });
+
+        it('should delete a product', async (done) =>  {
+            try {
+                const response = await axios.delete(`/products/${product.id}`);
+                expect(response.status).toBe(StatusCodes.OK)
+                done()
+            } catch(err) {
+                done.fail(err)
+            }  
         });
 
     })

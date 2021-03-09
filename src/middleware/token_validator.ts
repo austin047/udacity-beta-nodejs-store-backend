@@ -22,7 +22,12 @@ export const createAuthToken = ((payload: Object): string => jwt.sign(payload, s
  * @description - Verify if user token is valid
  */
 export const validateToken = (req: Request, res: Response, next: NextFunction): NextFunction | Response |  void => {
-    const token = req.headers.authorization
+  const authorizationHeader = req.headers.authorization 
+  
+
+  if (!authorizationHeader) return res.status(StatusCodes.FORBIDDEN).json({message: ReasonPhrases.FORBIDDEN})
+  
+  const token = authorizationHeader.split(' ')[1]
   
     if (!token || token == "") {
       return res.status(StatusCodes.FORBIDDEN).json({
@@ -47,3 +52,4 @@ export const validateToken = (req: Request, res: Response, next: NextFunction): 
       
     };
   };
+

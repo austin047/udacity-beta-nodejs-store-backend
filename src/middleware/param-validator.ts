@@ -42,6 +42,7 @@ export const  ParamValidation =  {
     param('productId', "Product id must be a number").isNumeric()
   ],
 
+
   retieveCategory: [
     param('categoryId', "Product id id missen in url path").notEmpty(),
     param('categoryId', "Product id must be a number").isNumeric()
@@ -53,6 +54,16 @@ export const  ParamValidation =  {
     param('orderId', "Order id must be a number").isNumeric()
   ],
 
+  updateOrder: [
+    param('orderId', "Order id id missen in url path").notEmpty(),
+    param('orderId', "Order id must be a number").isNumeric(),
+    query('status').custom( value => {
+      if(!value || value == "") return  Promise.reject('Please provide status to retrive orders for');
+      if(['complete', 'pending'].indexOf(value) < 0) return  Promise.reject('Please provide status a valid status [complete, pending]');
+      return Promise.resolve()
+    })
+  ],
+
   createCategory: [
     check('name', "A category must have a name").notEmpty()
   ],
@@ -60,12 +71,12 @@ export const  ParamValidation =  {
   createProduct: [
     check('name', "A product must have a name").notEmpty(),
     check('categoryId', "Product must belong to a category").notEmpty(),
-    check('categoryId', "Product must belong to a category").isNumeric(),
+    check('categoryId', "Category Id must be an integer").isNumeric(),
     check('price', "Product must have a price").notEmpty(),
     check('price', "Price Must me a number").isNumeric()
   ],
 
-  createOrder: [
+  createOrderProduct: [
     check('status', "Order Mist have a status").notEmpty(),
     check('productId', "Order Mist have a prodcut Id and be an integer").notEmpty().isNumeric(),
     check('productQty', "Order must have a quantity and be an integer").notEmpty().isNumeric(),
@@ -76,9 +87,26 @@ export const  ParamValidation =  {
     param('userId', "User id id missen in url path").notEmpty(),
     param('userId', "UserId must be a number").isNumeric(),
     query('status').custom( value => {
-      if(!value || value == "") return  Promise.reject('Please provide status to retrive orders for');
+      // if(!value || value == "") return  Promise.reject('Please provide status to retrive orders for');
+      if(!value || value == "") return  Promise.resolve()
+
       if(['complete', 'pending'].indexOf(value) < 0) return  Promise.reject('Please provide status a valid status [complete, pending]');
       return Promise.resolve()
     })
+  ],
+
+  createOrder: [
+    param('userId', "User id id missen in body").notEmpty(),
+    param('userId', "UserId must be a number").isNumeric(),
+  ],
+
+  addProductToOrder: [
+    param('orderId', "Order id is missen in the path").notEmpty(),
+    check('productId', "Product Id is missen in body").notEmpty(),
+    check('productQty', "Product Qty missen in body ").notEmpty()
+  ],
+
+  getOrderProducts: [
+    param('orderId', "Order id is missen in the path").notEmpty()
   ]
 }

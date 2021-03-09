@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequestParams, ParamValidation } from "../middleware/param-validator";
 import { validateToken } from "../middleware/token_validator";
-import orderModel from "../models/order.model";
+import orderModel from "../handlers/order";
 
 
 
@@ -9,20 +9,31 @@ const orderRouter = express.Router();
 
 orderRouter.route('/')
     /** GET /api/users - Get user*/
-    .get(validateToken, orderModel.list)
-    /** POST /api/users - Create new user */
+    .get(validateToken, orderModel.index)
 
 orderRouter.route('/:orderId')
     /** GET /api/users/userId - Get user*/
-    .get(validateToken,validateRequestParams(ParamValidation.retieveOrder), orderModel.get)
+    .get(validateToken,validateRequestParams(ParamValidation.retieveOrder), orderModel.show)
+
+    /** GET /api/users/userId - Get user*/
+    .put(validateToken,validateRequestParams(ParamValidation.updateOrder), orderModel.update)
+
+    /** GET /api/users/:userId */
+    .delete(validateToken, validateRequestParams(ParamValidation.retieveOrder), orderModel.delete)
 
 orderRouter.route('/users/:userId')
     /** GET /api/users - Get user*/
-    .post(validateToken, validateRequestParams(ParamValidation.createOrder), orderModel.create)
-
-    /** GET /api/users/:userId */
     .get(validateToken, validateRequestParams(ParamValidation.retieveUserOrders), orderModel.getUserOrder)
 
+      /** POST /api/users - Create new user */
+    .post(validateToken, validateRequestParams(ParamValidation.createOrder),  orderModel.create)
+
+orderRouter.route('/:orderId/product')
+    /** GET /api/users/userId - Get user*/
+    .post(validateToken,validateRequestParams(ParamValidation.addProductToOrder),  orderModel.addProductToOrder) 
+
+    /** GET /api/users/userId - Get product*/
+    .get(validateToken,validateRequestParams(ParamValidation.getOrderProducts), orderModel.getOrderProducts) 
 
     
 

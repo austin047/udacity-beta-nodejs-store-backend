@@ -1,11 +1,12 @@
 import axios from "axios";
-import server from "../src/server";
-import { correctUser, noFirstNameUser } from "./mock/user";
+import server from "../../src/server";
+import { correctUser, noFirstNameUser } from "../mock/user";
 import {
     StatusCodes,
 } from 'http-status-codes';
-import { IUser, IOrder, IOrderProduct, IProduct, ICategory } from '../src/helpers/interfaceDef'
-import { correctCategory } from "./mock/category";
+import { IUser, IOrder, IOrderProduct, IProduct, ICategory } from '../../src/helpers/interfaceDef'
+import { correctCategory } from "../mock/category";
+import { Order } from "../../src/models/order.model";
 
 
 describe('## orders Apis',  () => {
@@ -23,20 +24,20 @@ describe('## orders Apis',  () => {
     })
 
     describe("# GET /api/orders/users/:userId", () => {
-       let order:  IOrderProduct
+       let order:  Order
        let user: IUser
        let product: IProduct
        let category: ICategory
 
         beforeAll(async (done) => {
             try {
-              const userResponse = await axios.post("/users", correctUser);
+              const userResponse = await axios.post("/users", { userName: "mainmistro", firstName: "Main Mistro", lastName: "Maistro Man", password: "password123"});
               expect(userResponse.status).toBe(StatusCodes.CREATED)
               user = userResponse.data.user
 
-              expect(userResponse.data.user.firstName).toBe(correctUser.firstName)
+              expect(userResponse.data.user.userName).toBe("mainmistro")
               expect(userResponse.data.token).toEqual(jasmine.any(String))
-              axios.defaults.headers.common["Authorization"] = userResponse.data.token;
+              axios.defaults.headers.common["Authorization"] = `Bearer ${userResponse.data.token}`
               
 
               const categoryResponse = await axios.post("/categories", correctCategory);
@@ -67,24 +68,19 @@ describe('## orders Apis',  () => {
             }
           });
 
-          describe("# GET /api/users", () => {
+          describe("# GET /api/order/users/:userId", () => {
             
             it('should create new order',  async (done) => {
                 try {
-
-                    const newOrder  = {
-                        status: "complete",
-                        productId: product.id,
-                        productQty: 5
-                    }
-
-                const orderResponse = await axios.post(`/orders/users/${user.id}`, newOrder);
+                const orderResponse = await axios.post(`/orders/users/${user.id}`, {});
 
                 // if(userResponse.status !== StatusCodes.OK) done.fail(orderResponse.data)
                 expect(orderResponse.status).toBe(StatusCodes.CREATED)
                 expect(orderResponse.data).toEqual(jasmine.any(Object));
 
-                order = orderResponse.data as IOrderProduct
+                order = orderResponse.data as Order
+                expect(order.userId).toBe(user.id)
+
                 done()
                 } catch(err) {
                     done.fail(err)
@@ -97,18 +93,12 @@ describe('## orders Apis',  () => {
                 try {
                     let wrongHeaderConfig = {
                         headers: {
-                            Authorization: "wrongauthtoken",
+                            Authorization: "Bearer wrongauthtoken",
                         }
                       }
                       
-                      
-                      const newOrder  = {
-                        status: "complete",
-                        productId: product.id,
-                        productQty: 5
-                    }
 
-                const orderResponse = await axios.post(`/orders/users/${user.id}`, newOrder, wrongHeaderConfig);
+                const orderResponse = await axios.post(`/orders/users/${user.id}`,{}, wrongHeaderConfig);
 
                 // if(userResponse.status !== StatusCodes.OK) done.fail(orderResponse.data)
                 expect(orderResponse.status).toBe(StatusCodes.UNAUTHORIZED)
@@ -129,14 +119,8 @@ describe('## orders Apis',  () => {
                             Authorization: ""
                         }
                     }
-                      
-                    const newOrder  = {
-                        status: "complete",
-                        productId: product.id,
-                        productQty: 5
-                    }
 
-                const orderResponse = await axios.post(`/orders/users/${user.id}`, newOrder, noAuthHeaderConfig);
+                const orderResponse = await axios.post(`/orders/users/${user.id}`, {}, noAuthHeaderConfig);
                 expect(orderResponse.status).toBe(StatusCodes.FORBIDDEN)
                 done()
                 } catch(err) {
@@ -162,6 +146,7 @@ describe('## orders Apis',  () => {
                 }
             });
 
+           
             it('should return a status code of 400[BAD_REQUEST] when retrieving order with wrong status',  async (done) => {
                 try {
 
@@ -201,6 +186,94 @@ describe('## orders Apis',  () => {
             });
 
         })
+
+        describe("# Get /api/orders/:orderId", () => {
+
+            it('should retirver a category', async (done) =>  {
+                try {
+                    const response = await axios.get(`/orders/${order.id}`);
+                    expect(response.status).toBe(StatusCodes.OK)
+                    expect(response.data.id).toBe(order.id)
+                    done()
+                } catch(err) {
+                    done.fail(err)
+                }  
+            });
+
+            it('should update  order ',  async (done) => {
+                try {
+                const orderResponse = await axios.put(`/orders/${order.id}?status=complete`);
+                
+                expect(orderResponse.status).toBe(StatusCodes.OK)
+                expect(orderResponse.data).toEqual(jasmine.any(Object))
+                expect(orderResponse.data.status).toBe("complete")
+                expect(orderResponse.data.id).toBe(order.id)
+
+                done()
+                } catch(err) {
+                    done.fail(err)
+                }  finally {
+                    done()
+                }
+            });
+
+        })
+
+
+        describe("# Get /api/orders/:orderId/users/:userId", () => {
+           
+        })
+
+        describe("# Get /api/orders/:orderId/product", () => {
+
+            it('should add product to order ',  async (done) => {
+                try {
+
+                const newProduct = {
+                    productId: product.id,
+                    productQty: 5
+                }
+                const orderResponse = await axios.post(`/orders/${order.id}/product`, newProduct);
+                
+                expect(orderResponse.status).toBe(StatusCodes.CREATED)
+                expect(orderResponse.data).toEqual(jasmine.any(Object))
+                expect(orderResponse.data.productId).toBe(product.id)
+
+                done()
+                } catch(err) {
+                    done.fail(err)
+                }  finally {
+                    done()
+                }
+            });
+
+            it('should get products for a particular order order ',  async (done) => {
+                try {
+                const orderResponse = await axios.get(`/orders/${order.id}/product`);
+                
+                expect(orderResponse.status).toBe(StatusCodes.OK)
+                expect(orderResponse.data).toEqual(jasmine.any(Array))
+                expect(orderResponse.data.length).toBeGreaterThan(0)
+
+                done()
+                } catch(err) {
+                    done.fail(err)
+                }  finally {
+                    done()
+                }
+            });
+        })
+
+        it('should delete a order', async (done) =>  {
+            try {
+                const response = await axios.delete(`/orders/${order.id}`);
+                expect(response.status).toBe(StatusCodes.OK)
+                done()
+            } catch(err) {
+                done.fail(err)
+            }  
+        });
+
 
       })
    

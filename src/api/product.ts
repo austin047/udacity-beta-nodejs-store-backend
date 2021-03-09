@@ -1,22 +1,23 @@
 import express from "express";
 import { validateRequestParams, ParamValidation } from "../middleware/param-validator";
 import { validateToken } from "../middleware/token_validator";
-import productModel from "../models/product.model";
+import productHandler from "../handlers/product";
 
 
 
 const productRouter = express.Router();
 
 productRouter.route('/')
-    /** GET /api/users - Get user*/
-    .get(validateToken, productModel.list)
-    /** POST /api/users - Create new user */
-    .post(validateToken, validateRequestParams(ParamValidation.createProduct), productModel.create)
+    /** GET /api/products - Get user*/
+    .get(validateToken, productHandler.index)
+    /** POST /api/products - Create new user */
+    .post(validateToken, validateRequestParams(ParamValidation.createProduct), productHandler.create)
 
 productRouter.route('/:productId')
-    /** GET /api/users/userId - Get user*/
-    .get(validateToken, validateRequestParams(ParamValidation.retieveProduct), productModel.get)
+    /** GET /api/products/productId - Get user*/
+    .get(validateToken, validateRequestParams(ParamValidation.retieveProduct), productHandler.show)
 
-
+     /** GET /api/products/productId - Get user*/
+     .delete(validateToken, validateRequestParams(ParamValidation.retieveProduct), productHandler.delete)
 
 export default productRouter; 

@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequestParams, ParamValidation } from "../middleware/param-validator";
 import { validateToken } from "../middleware/token_validator";
-import categoryModel from "../models/category.model";
+import categoryHandler from "../handlers/category";
 
 
 
@@ -9,12 +9,15 @@ const categoryRouter = express.Router();
 
 categoryRouter.route('/')
     /** GET /api/users - Get user*/
-    .get(categoryModel.list)
+    .get(categoryHandler.index)
     /** POST /api/users - Create new user */
-    .post(validateToken, validateRequestParams(ParamValidation.createCategory), categoryModel.create)
+    .post(validateToken, validateRequestParams(ParamValidation.createCategory), categoryHandler.create)
 
     categoryRouter.route('/:categoryId')
     /** GET /api/users/userId - Get user*/
-    .get(validateToken, validateRequestParams(ParamValidation.retieveCategory), categoryModel.get)
+    .get(validateToken, validateRequestParams(ParamValidation.retieveCategory), categoryHandler.show)
+
+    /** GET /api/users/userId - Get user*/
+    .delete(categoryHandler.delete)
 
 export default categoryRouter; 

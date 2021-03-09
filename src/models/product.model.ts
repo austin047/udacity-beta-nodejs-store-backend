@@ -1,123 +1,84 @@
 import pool from "../database/databaseConnection";
-import { Request, Response, NextFunction } from 'express';
-import {
-    StatusCodes,
-} from 'http-status-codes';
 import { productQueries } from "../database/queries/products.queries";
+import bcrypt from "bcryptjs";
+import APIError from "../helpers/APIError";
+import { StatusCodes } from "http-status-codes";
 
-class ProductModel {
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Create a product and return the new product object
-     * @return {json} Returns json [Product] object 
-     */
-    static async create(req: Request, res: Response, next: NextFunction) {
+export type Product = {
+    id: number,
+    name: string,
+    price: number,
+    categoryId: number
+};
+
+export class ProductStore {
+    async index(): Promise<Product[]> {
         var client = await pool.connect()
-        try {
-            
-            const product = [
-                req.body.name,
-                req.body.price,
-                req.body.categoryId
-            ];
+        
+        const { rows } = await client.query(productQueries.getAllProducts)
 
-            const { rows } = await client.query(productQueries.createProduct, product);
-
-            if(rows.length <= 0 ) 
-                return next(new Error("InternalError: product failed to create"))
-
-            const newproduct = {
-                id : rows[0].id,
-                name: rows[0].name,
-                price: rows[0].price,
-                categoryId: rows[0].category_id
-            };
-
-            return res.status(StatusCodes.CREATED).json(newproduct)
-
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
-    }
-
-
-
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Get product by productId
-     * @return {json} Returns json  [product] object 
-     */
-    static async get(req: Request, res: Response, next: NextFunction) {
-        var client = await pool.connect()
-        try {
-
-            const { productId } = req.params;
-
-            const { rows } = await client.query(productQueries.getProductById, [productId])  
-
-            if(rows.length <= 0 ) return res.status(StatusCodes.NOT_FOUND).json({})
-
-            const product  =   {
-                id : rows[0].id,
-                name: rows[0].name,
-                price: rows[0].price,
-                categoryId: rows[0].category_id
+        const products = rows.map((row) => {
+            return {
+                id : row.id,
+                name: row.name,
+                price: Number(row.price),
+                categoryId: row.category_id
             } 
+        })
 
+        client.release()
 
-           res.status(StatusCodes.OK).json(product)
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
+        return products 
     }
 
 
-
-    /**
-     * @static
-     * @param req - RequestBody
-     * @param res - ResponseBody
-     * @param next - NextMiddlwareFunction
-     * @description - Get list of all users
-     * @return {json} Returns json [List<product>] object 
-     */
-    static async list(req: Request, res: Response, next: NextFunction) {
+    async show(productId: Number): Promise<Product | null> {
         var client = await pool.connect()
-        try {
 
-            const { rows } = await client.query(productQueries.getAllProducts)
+        const { rows } = await client.query(productQueries.getProductById, [productId])  
 
-            const productList = rows.map((row) => {
-                return {
-                    id : row.id,
-                    name: row.name,
-                    price: row.price,
-                    categoryId: row.category_id
+        if( rows.length <= 0) return null
 
-                } 
-            })
+        client.release()
 
-            res.status(StatusCodes.OK).json(productList)
+        return  {
+            id : rows[0].id,
+            name: rows[0].name,
+            price: Number(rows[0].price),
+            categoryId: rows[0].category_id
+        } 
+    }
 
-        } catch(e) {
-            next(e)
-        }
-         finally {
-            client.release()
-        }
+    async create(product: Product): Promise<Product> {
+        var client = await pool.connect()
+
+        const productPayload = [
+            product.name,
+            product.price,
+            product.categoryId
+        ]
+
+        const { rows } = await client.query(productQueries.createProduct, productPayload )
+
+        if(rows.length <= 0 ) throw new  Error("InternalError: Product Account Not Created After ALl conditions passed")
+
+        client.release()
+
+        return  {
+            id : rows[0].id,
+            name: rows[0].name,
+            price: Number(rows[0].price),
+            categoryId: rows[0].category_id
+        } 
+    }
+
+
+    async delete(productId: Number): Promise<null> {
+        var client = await pool.connect()
+
+        await client.query(productQueries.deleteProduct, [productId])
+
+        client.release()
+        return null;
     }
 }
-
-export default ProductModel

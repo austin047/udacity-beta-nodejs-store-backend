@@ -1,11 +1,13 @@
 import axios from "axios";
-import server from "../src/server";
-import { correctUser, noFirstNameUser } from "./mock/user";
+import server from "../../src/server";
+import { correctUser, noFirstNameUser } from "../mock/user";
 import {
     StatusCodes,
 } from 'http-status-codes';
-import { IUser, ICategory } from '../src/helpers/interfaceDef'
-import { correctCategory } from "./mock/category";
+import { IUser, ICategory } from '../../src/helpers/interfaceDef'
+import { correctCategory } from "../mock/category";
+import { User } from "../../src/models/user.model";
+import { Category } from "../../src/models/category.model";
 
 describe('## Categories Apis',  () => {
     axios.defaults.baseURL = `http://localhost:3000/api`
@@ -17,31 +19,34 @@ describe('## Categories Apis',  () => {
         else return Promise.reject(error);
     });
 
-    let user: IUser
+    let user: User
+    let category: Category
 
 
-    beforeAll(() => {
+    beforeAll(async (done) => {
         server
+        try {
+            const userResponse = await axios.post("/users", correctUser);
+                expect(userResponse.data.user.firstName).toBe(correctUser.firstName)
+                user = userResponse.data.user
+
+                axios.defaults.headers.common["Authorization"] = `Bearer ${userResponse.data.token}`
+                done()
+        } catch(err) {
+            done.fail(err)
+        }
+           
+       
     })
 
     describe("# POST /api/categories", () => {
-        beforeAll(async (done) => {
-            try {
-                const userResponse = await axios.post("/users", correctUser);
-                  expect(userResponse.data.user.firstName).toBe(correctUser.firstName)
-                  user = userResponse.data.user
-
-                  axios.defaults.headers.common["Authorization"] = userResponse.data.token;
-                  done()
-            } catch(err) {
-                done.fail(err)
-            }
-           
-        })
+       
         
         it('should creat a new category', async (done) =>  {
             try {
                 const response = await axios.post("/categories", correctCategory);
+
+                category = response.data
 
                 expect(response.status).toBe(StatusCodes.CREATED)
                 expect(response.data).toEqual(jasmine.any(Object));
@@ -55,7 +60,7 @@ describe('## Categories Apis',  () => {
 
         it('should return a 400[BadRequest] error if name not provided', async (done) =>  {
             try {
-                const response = await axios.post("/categories", noFirstNameUser)
+                const response = await axios.post("/categories", {})
                 expect(response.status).toBe(StatusCodes.BAD_REQUEST)
             } catch(err) {
                 done.fail(err)
@@ -63,9 +68,7 @@ describe('## Categories Apis',  () => {
                 done()
             }
         });
-    })
 
-    describe("# GET /api/categories", () => {
         it('should get list of categories', async (done) =>  {
             try {
                 const response = await axios.get("/categories");
@@ -80,25 +83,6 @@ describe('## Categories Apis',  () => {
     })
 
     describe("# GET /api/categories/:categoryId", () => {
-       let category:  ICategory
-
-        beforeAll(async (done) => {
-            try {
-              const userResponse = await axios.post("/users", correctUser);
-            //   if(userResponse.status !== StatusCodes.OK) done.fail(userResponse.data)
-
-              axios.defaults.headers.common["Authorization"] = userResponse.data.token;
-              const categoryResponse = await axios.post("/categories", correctCategory);
-
-            //   if(userResponse.status !== StatusCodes.OK) done.fail(categoryResponse.data)
-
-              category = categoryResponse.data
-              done()
-            } catch (err) {
-                done.fail(err)
-            }
-          });
-
 
         it('should get category details', async (done) =>  {
             try {
@@ -150,7 +134,7 @@ describe('## Categories Apis',  () => {
             try {
                 let wrongHeaderConfig = {
                     headers: {
-                        Authorization: "wrongauthtoken",
+                        Authorization: "Bearer wrongauthtoken",
                     }
                   }
                 const response = await axios.get(`/categories/${category.id}`, wrongHeaderConfig);
@@ -160,8 +144,16 @@ describe('## Categories Apis',  () => {
             } finally{
                 done()
             }
-             
-            
+        });
+
+        it('should delete a category', async (done) =>  {
+            try {
+                const response = await axios.delete(`/categories/${category.id}`);
+                expect(response.status).toBe(StatusCodes.OK)
+                done()
+            } catch(err) {
+                done.fail(err)
+            }  
         });
 
       })
