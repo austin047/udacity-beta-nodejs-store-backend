@@ -20,7 +20,7 @@ Example: You can format this however you like but these types of information sho
 - Show (args: categoryId)[token required]
   route: '/categories/:categoryId' [GET] 
 
-- Current Category (args: Category)[token required]
+- Create Category (args: Category)[token required]
   route: '/category' [POST]
 
 - Delete (args: categoryId)[token required]
@@ -31,14 +31,14 @@ Example: You can format this however you like but these types of information sho
   route: '/products' [GET]
 
 - Show (args: productId) [token required]
-  route: '/products/productId' [GET]
+  route: '/products/:productId' [GET]
 
-- Create (args: Product)[token required]
+- Create product (args: Product)[token required]
   route: '/products' [POST]
 
 
 - Delete (args: productId) [token required]
-  route: '/products/productId' [DELETE]
+  route: '/products/:productId' [DELETE]
 
 #### Users
 - Index [token required]
@@ -47,7 +47,7 @@ Example: You can format this however you like but these types of information sho
 - Show (args: userId)[token required]
   route: '/users/:userId' [GET] 
 
-- Create (args: User)[token required]
+- Create User (args: User)[token required]
   route: '/users' [POST]
 
 - Delete (args: userId)[token required]
@@ -67,11 +67,11 @@ Example: You can format this however you like but these types of information sho
 - Delete Order (args: orderId)[token required]
   route: '/orders/:orderId' [DELETE]
 
-- Order by user (args: user id)[token required]
-  route: '/orders/users/userId' [POST]
+- Create order for user (args: user id)[token required]
+  route: '/orders/users/:userId' [POST]
 
-- Get order for user (args: user id)[token required]
-  route: '/orders/users/userId' [GET]
+- Get current order for order for user (args: user id)[token required]
+  route: '/orders/users/:userId' [GET]
 
 - Add product to order (args: user id)[token required]
   route: '/orders/:orderId/product' [POST]
@@ -113,7 +113,7 @@ Users (id: int PRIMARY KEY, firstname: varchar, lastname: varchar, password: var
 - user_id
 - status of order [active, complete]
 
-Order (order_id: int PRIMARY KEY, user_id: int [foreign key to users table], status: varchar[complete or pending])
+Order (order_id: int PRIMARY KEY, user_id: int [foreign key to users table], status: varchar[complete or active])
 
 
 [AddtionalTable] 

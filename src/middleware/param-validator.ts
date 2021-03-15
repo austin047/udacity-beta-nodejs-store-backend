@@ -90,7 +90,7 @@ export const  ParamValidation =  {
       // if(!value || value == "") return  Promise.reject('Please provide status to retrive orders for');
       if(!value || value == "") return  Promise.resolve()
 
-      if(['complete', 'pending'].indexOf(value) < 0) return  Promise.reject('Please provide status a valid status [complete, pending]');
+      if(['complete', 'pending'].indexOf(value) < 0) return  Promise.reject('Please provide a valid status [complete, pending]');
       return Promise.resolve()
     })
   ],
