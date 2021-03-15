@@ -70,7 +70,7 @@ Example: You can format this however you like but these types of information sho
 - Create order for user (args: user id)[token required]
   route: '/orders/users/:userId' [POST]
 
-- Get current order for order for user (args: user id)[token required]
+- Get current order for user (args: user id)[token required]
   route: '/orders/users/:userId' [GET]
 
 - Add product to order (args: user id)[token required]
