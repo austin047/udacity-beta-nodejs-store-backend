@@ -35,47 +35,14 @@ app.use(morgan('combined'))
 // })
 app.use('/api', apiRouter)
 
-// if error is not an instanceOf APIError, convert it.
-// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-//     if (!(err instanceof APIError)) {
-//         console.log(err)
-//         console.log(err.isPublic)
-//         console.log(err.status);
-
-//         const apiError = new APIError(err.message, err.status, err.isPublic);
-//         // console.log('------------------------\t');
-//         // console.log(err.stack);
-//         // console.log('------------------------\t');
-//         return next(apiError);
-//       }
-//     return next(err);
-//   });
-
-// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-
-//   console.log("Error")
-//   console.log(typeof err)
-
-//     if (err instanceof APIError) {
-//        console.log(typeof err)
-//         return res.status(err.status).json({
-//           error: err
-//         })
-//     } else {
-//       return next(err);
-//     }
-
-//   });
-
 
 
   
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {// eslint-disable-line no-unused-vars
-    // console.log(err.stack)
+  app.use((err: APIError, req: Request, res: Response, next: NextFunction) => {// eslint-disable-line no-unused-vars
 
     let status: number
 
-    console.log(err)
+    //console.log(err)
 
     if(err.status) status = err.status
     else status = StatusCodes.INTERNAL_SERVER_ERROR

@@ -1,7 +1,7 @@
 import express from "express";
 import userModel from '../handlers/user'
 import { validateRequestParams, ParamValidation } from "../middleware/param-validator";
-import { validateToken } from "../middleware/token_validator";
+import { validateToken  } from "../middleware/token_validator";
 
 
 
